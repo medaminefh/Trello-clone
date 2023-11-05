@@ -1,0 +1,44 @@
+<script setup lang="ts">
+import type { Task } from "@/types";
+
+const props = defineProps<{ task: Task }>();
+const edit = ref(false);
+const task = props.task;
+</script>
+
+<template>
+	<div
+		:title="task?.createdAt?.toLocaleDateString()"
+		class="task bg-white p-2 mb-2 rounded shadow-sm max-w-[250px] flex overflow-x-auto relative"
+	>
+		<div v-if="!edit" @click="edit = true">
+			<DragHandelIcon />
+			<span>
+				{{ task.title }}
+			</span>
+		</div>
+		<div v-else>
+			<textarea v-model="task.title"></textarea>
+			<span
+				class="text-gray-600 font-bold cursor-pointer absolute top-2 right-2"
+				@click="edit = false"
+				>X</span
+			>
+		</div>
+	</div>
+</template>
+
+<style scoped>
+.sortable-drag .task {
+	transform: rotate(5deg);
+}
+
+.sortable-ghost .task {
+	position: relative;
+}
+
+.sortable-ghost .task::after {
+	content: "";
+	@apply absolute top-0 left-0 bottom-0 right-0 bg-slate-300 rounded;
+}
+</style>
