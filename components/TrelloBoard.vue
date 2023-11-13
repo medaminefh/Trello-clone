@@ -4,8 +4,6 @@ import draggable from "vuedraggable";
 import type { Column, Task } from "@/types";
 import { nanoid } from "nanoid";
 
-const alt = useKeyModifier("Alt");
-
 const columns = ref<Column[]>([
 	{
 		id: nanoid(),
@@ -72,9 +70,41 @@ const columns = ref<Column[]>([
 		tasks: [],
 	},
 ]);
+
+const alt = useKeyModifier("Alt");
+const selectedTask = ref<Task | null>(null);
+const selectedColumnId = ref<string | null>(null);
+const openModel = ref(false);
+
+const handelOpenModel = (columnId: string, task: Task) => {
+	selectedColumnId.value = columnId;
+	selectedTask.value = task;
+	openModel.value = true;
+};
+
+const handelCloseModel = () => {
+	selectedTask.value = null;
+	openModel.value = false;
+};
+
+const handelUpdateTask = (task: Task) => {
+	// console.log(task);
+	// const column = columns.value.find((col) => col.id == selectedColumnId.value);
+	// const tasks = column?.tasks;
+	// const updatedTasks = tasks?.map((oldTask) =>
+	// 	oldTask.id == selectedTask.value?.id ? task : oldTask
+	// );
+	/* 	columns.value.find(col => col.id == selectedColumnId.value)?.tasks = updatedTasks */
+};
 </script>
 
 <template>
+	<ModalTask
+		:task="selectedTask"
+		:isOpen="openModel"
+		@handelCloseModel="handelCloseModel"
+		@handelUpdateTask="handelUpdateTask"
+	/>
 	<div>
 		<draggable
 			v-model="columns"
@@ -99,8 +129,11 @@ const columns = ref<Column[]>([
 						handle=".drag-handel"
 					>
 						<template #item="{ element: task }: { element: Task }">
-							<div>
-								<TrelloTask :task="task" />
+							<div class="cursor-pointer">
+								<TrelloTask
+									:task="task"
+									@click="handelOpenModel(column.id, task)"
+								/>
 							</div> </template
 					></draggable>
 					<textarea v-if="column.add" class="max-w-[250px]"></textarea>
