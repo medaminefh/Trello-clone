@@ -75,6 +75,10 @@ const alt = useKeyModifier("Alt");
 const selectedTask = ref<Task | null>(null);
 const selectedColumnId = ref<string | null>(null);
 const openModel = ref(false);
+const mouseStatus = ref({
+	start: 0,
+	isMouving: false,
+});
 
 const handelOpenModel = (columnId: string, task: Task) => {
 	selectedColumnId.value = columnId;
@@ -139,6 +143,7 @@ const handelDeleteTask = () => {
 	<div>
 		<draggable
 			v-model="columns"
+			v-dragscroll:nochilddrag
 			group="columns"
 			item-key="id"
 			class="flex gap-4 overflow-x-auto items-start pb-4"
