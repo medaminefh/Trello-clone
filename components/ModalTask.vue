@@ -5,13 +5,31 @@ const props = defineProps<{ task: Task | null; isOpen: Boolean }>();
 const emits = defineEmits<{
 	(e: "handelCloseModel"): void;
 	(e: "handelUpdateTask", task: Task): void;
+	(e: "handelDeleteTask"): void;
 }>();
 
-const newTitle = ref(props.task?.title);
+const newTitle = ref();
 
 const handelUpdate = () => {
-	// emits("handelUpdateTask", { ...props.task, title: newTitle.value });
+	const newTask = props.task;
+	newTask!.title = newTitle.value;
+	emits("handelUpdateTask", newTask as Task);
+	emits("handelCloseModel");
 };
+
+const handelDelete = () => {
+	if (confirm(`❗Are you sure you want to delete this task❗`)) {
+		emits("handelDeleteTask");
+		emits("handelCloseModel");
+	}
+};
+
+watch(
+	() => props.task,
+	(newValue) => {
+		newTitle.value = newValue?.title;
+	}
+);
 </script>
 
 <template>
@@ -38,7 +56,7 @@ const handelUpdate = () => {
 					<label>Title</label>
 					<textarea
 						rows="5"
-						v-model="task.title"
+						v-model="newTitle"
 						class="outline-none border border-black px-4 py-2 w-full"
 					/>
 				</div>
@@ -46,6 +64,12 @@ const handelUpdate = () => {
 			<footer class="flex justify-center mt-4 gap-10 p-10">
 				<button @click="emits('handelCloseModel')" class="text-gray-500">
 					Cancel
+				</button>
+				<button
+					@click="handelDelete"
+					class="bg-red-400 text-white rounded px-3"
+				>
+					Delete
 				</button>
 				<button
 					@click="handelUpdate"

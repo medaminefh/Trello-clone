@@ -88,13 +88,43 @@ const handelCloseModel = () => {
 };
 
 const handelUpdateTask = (task: Task) => {
-	// console.log(task);
-	// const column = columns.value.find((col) => col.id == selectedColumnId.value);
-	// const tasks = column?.tasks;
-	// const updatedTasks = tasks?.map((oldTask) =>
-	// 	oldTask.id == selectedTask.value?.id ? task : oldTask
-	// );
-	/* 	columns.value.find(col => col.id == selectedColumnId.value)?.tasks = updatedTasks */
+	const column = columns.value.find((col) => col.id == selectedColumnId.value)!;
+	const tasks = column?.tasks;
+	const updatedTasks = tasks?.map((oldTask) =>
+		oldTask.id == selectedTask.value?.id ? task : oldTask
+	);
+
+	if (selectedColumnId.value) {
+		column.tasks = updatedTasks as Task[];
+	}
+};
+
+const clone = (task: Task) => {
+	return { ...task, id: nanoid() };
+};
+
+const handelCreateTask = (columnId: string) => {
+	const column = columns.value.find((col) => col.id == columnId);
+	if (column?.newTask && column.newTask.length > 0) {
+		const newTask = {
+			id: nanoid(),
+			title: column.newTask,
+			createdAt: new Date(),
+		};
+		// Push the new task to the specific column's tasks
+		column?.tasks.push(newTask);
+		column!.add = !column?.add;
+		column.newTask = "";
+	}
+};
+
+const handelDeleteTask = () => {
+	const column = columns.value.find((col) => col.id == selectedColumnId.value)!;
+	const tasks = column.tasks;
+	const updatedTasks = tasks.filter(
+		(task) => task.id !== selectedTask.value?.id
+	);
+	column.tasks = updatedTasks;
 };
 </script>
 
@@ -104,6 +134,7 @@ const handelUpdateTask = (task: Task) => {
 		:isOpen="openModel"
 		@handelCloseModel="handelCloseModel"
 		@handelUpdateTask="handelUpdateTask"
+		@handelDeleteTask="handelDeleteTask"
 	/>
 	<div>
 		<draggable
@@ -124,6 +155,7 @@ const handelUpdateTask = (task: Task) => {
 					<draggable
 						v-model="column.tasks"
 						:group="{ name: 'tasks', pull: alt ? 'clone' : true }"
+						:clone="clone"
 						item-key="id"
 						:animation="150"
 						handle=".drag-handel"
@@ -136,14 +168,18 @@ const handelUpdateTask = (task: Task) => {
 								/>
 							</div> </template
 					></draggable>
-					<textarea v-if="column.add" class="max-w-[250px]"></textarea>
+					<textarea
+						v-if="column.add"
+						class="max-w-[250px]"
+						v-model="column.newTask"
+					></textarea>
 					<footer>
 						<div v-if="column.add" class="flex justify-between">
 							<button class="text-gray-500" @click="column.add = !column.add">
 								Cancel
 							</button>
 							<button
-								@click="column.add = !column.add"
+								@click="handelCreateTask(column.id)"
 								class="bg-teal-400 text-white rounded px-3"
 							>
 								Confirm

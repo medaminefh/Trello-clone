@@ -10,5 +10,6 @@ export interface Column {
 	id: ID;
 	title: string;
 	tasks: Task[];
-	add: Boolean;
+	add?: Boolean;
+	newTask?: string;
 }
