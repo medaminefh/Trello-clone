@@ -207,7 +207,7 @@ const handelCloseColumnModal = () => {
 					></draggable>
 					<textarea
 						v-if="column.add"
-						class="max-w-[250px]"
+						class="w-full px-2"
 						v-model="column.newTask"
 					></textarea>
 					<footer>
