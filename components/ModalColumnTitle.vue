@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import type { Column } from "~/types";
 
-const props = defineProps<{ column: Column; isOpen: Boolean }>();
+const props = defineProps<{ column: Column | null; isOpen: Boolean }>();
 const emits = defineEmits<{
 	(e: "handelCloseModel"): void;
-	(e: "handelUpdateTitle", title: string): void;
+	(e: "handelUpdateTitle", title: string | undefined): void;
 	(e: "handelDeleteColumn"): void;
 }>();
 
@@ -18,7 +18,7 @@ const handelUpdate = () => {
 	emits("handelCloseModel");
 };
 
-const newTitle = ref("");
+const newTitle = ref<string | undefined>("");
 
 watch(
 	() => props.column,
@@ -35,7 +35,7 @@ watch(
 	>
 		<div @click.stop class="relative bg-white rounded-xl overflow-hidden">
 			<header class="flex justify-between bg-teal-700 p-4">
-				<h3 class="text-xl text-white">{{ column.id.substring(8) }}</h3>
+				<h3 class="text-xl text-white">{{ column?.id.substring(8) }}</h3>
 				<button
 					@click="emits('handelCloseModel')"
 					class="text-2xl text-white font-bold"

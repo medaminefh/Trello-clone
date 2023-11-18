@@ -1,28 +1,24 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import draggable from "vuedraggable";
+import { useStorage } from "@vueuse/core";
 import type { Column, Task } from "@/types";
 import { nanoid } from "nanoid";
 
-const columns = ref<Column[]>([
+const state = ref<Column[]>([
 	{
 		id: nanoid(),
-		title: "backlog!",
+		title: "First day",
 		add: false,
 		tasks: [
 			{
 				id: nanoid(),
-				title: "create your first tuto for this end task",
+				title: "Complete the x course",
 				createdAt: new Date(),
 			},
 			{
 				id: nanoid(),
-				title: "start a blog",
-				createdAt: new Date(),
-			},
-			{
-				id: nanoid(),
-				title: "complete the tasks",
+				title: "Create a blog about that course",
 				createdAt: new Date(),
 			},
 		],
@@ -33,49 +29,35 @@ const columns = ref<Column[]>([
 		add: false,
 		tasks: [],
 	},
-	{
-		id: nanoid(),
-		title: "Third day",
-		add: false,
-		tasks: [],
-	},
-	{
-		id: nanoid(),
-		title: "Third day",
-		add: false,
-		tasks: [],
-	},
-	{
-		id: nanoid(),
-		title: "Third day",
-		add: false,
-		tasks: [],
-	},
-	{
-		id: nanoid(),
-		title: "Third day",
-		add: false,
-		tasks: [],
-	},
-	{
-		id: nanoid(),
-		title: "Third day",
-		add: false,
-		tasks: [],
-	},
-	{
-		id: nanoid(),
-		title: "Third day",
-		add: false,
-		tasks: [],
-	},
 ]);
+
+const columns = useStorage("columns", state.value, localStorage, {
+	mergeDefaults: true,
+});
 
 const alt = useKeyModifier("Alt");
 const selectedTask = ref<Task | null>(null);
 const selectedColumn = ref<Column | null>(null);
 const openTaskModal = ref(false);
 const openColumnModal = ref(false);
+const openNewColumnModal = ref(false);
+
+const createNewColumn = (
+	title: string,
+	tasks: Omit<Task, "id" | "createdAt">[]
+) => {
+	const newTasks = tasks.map((task) => ({
+		title: task.title,
+		id: nanoid(),
+		createdAt: new Date(),
+	}));
+	const newColumn = { id: nanoid(), title, add: false, tasks: newTasks };
+	columns.value.push(newColumn);
+};
+
+const handelOpenCloseColumnModal = () => {
+	openNewColumnModal.value = !openNewColumnModal.value;
+};
 
 const handelOpenModel = (column: Column, task: Task) => {
 	selectedColumn.value = column;
@@ -137,7 +119,7 @@ const openChangeTitleModal = (column: Column) => {
 	selectedColumn.value = column;
 };
 
-const handelChangeColumnTitle = (title: string) => {
+const handelChangeColumnTitle = (title: string | undefined) => {
 	const newCols = columns.value.map((col) =>
 		col.id == selectedColumn.value?.id ? { ...col, title } : col
 	);
@@ -161,6 +143,11 @@ const handelCloseColumnModal = () => {
 </script>
 
 <template>
+	<ModalNewColumn
+		:isOpen="openNewColumnModal"
+		@handelCloseModal="handelOpenCloseColumnModal"
+		@handelCreate="createNewColumn"
+	/>
 	<ModalColumnTitle
 		:isOpen="openColumnModal"
 		:column="selectedColumn"
@@ -175,7 +162,15 @@ const handelCloseColumnModal = () => {
 		@handelUpdateTask="handelUpdateTask"
 		@handelDeleteTask="handelDeleteTask"
 	/>
-	<div>
+	<div class="flex justify-end" v-if="columns.length">
+		<button
+			@click="handelOpenCloseColumnModal"
+			class="flex items-center justify-center text-teal-600 font-bold right-0 bg-white p-2 mb-2 w-10 h-10 rounded-full border"
+		>
+			+
+		</button>
+	</div>
+	<div v-if="columns.length">
 		<draggable
 			v-model="columns"
 			v-dragscroll:nochilddrag
@@ -238,5 +233,13 @@ const handelCloseColumnModal = () => {
 				</div>
 			</template>
 		</draggable>
+	</div>
+	<div v-else class="flex mt-20 justify-center items-center">
+		<button
+			@click="handelOpenCloseColumnModal"
+			class="flex items-center justify-center text-teal-600 font-bold right-0 bg-white p-2 mb-2 w-20 h-20 text-3xl rounded-full border"
+		>
+			+
+		</button>
 	</div>
 </template>
