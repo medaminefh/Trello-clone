@@ -12,8 +12,8 @@ const handelCreate = () => {
 	if (!title.value.length) return;
 
 	const formattedTasks = tasks.value.filter((task) => task.title.length > 5);
-	emits("handelCreate", title.value, formattedTasks);
 	if (!formattedTasks.length) return;
+	emits("handelCreate", title.value, formattedTasks);
 
 	title.value = "";
 	tasks.value = [{ title: "" }];
