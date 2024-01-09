@@ -5,7 +5,7 @@ export default defineNuxtConfig({
 		plugins: ["~/server/index.ts"],
 	},
 	plugins: [{ src: "~/plugins/drag-scroll", ssr: false }],
-	ssr: false,
+	ssr: true,
 	app: {
 		baseURL: "/Trello-clone",
 		buildAssetsDir: "assets",

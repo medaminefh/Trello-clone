@@ -15,7 +15,7 @@ const handleSubmit = (event: Event) => {
 };
 </script>
 <template>
-	<section class="bg-gray-50 dark:bg-gray-900">
+	<section class="bg-gray-50">
 		<div
 			class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0"
 		>
@@ -23,9 +23,7 @@ const handleSubmit = (event: Event) => {
 				<img class="w-8 h-8 mr-2" src="/favicon.ico" alt="logo" />
 				Sign up
 			</span>
-			<div
-				class="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0"
-			>
+			<div class="w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0">
 				<div class="p-6 space-y-4 md:space-y-6 sm:p-8">
 					<h1
 						class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl"
@@ -110,7 +108,7 @@ const handleSubmit = (event: Event) => {
 						>
 							Sign up
 						</button>
-						<p class="text-sm font-light text-gray-500 dark:text-gray-400">
+						<p class="text-sm font-light text-gray-500">
 							have an account?
 							<NuxtLink to="login" class="font-medium hover:underline"
 								>Login</NuxtLink
